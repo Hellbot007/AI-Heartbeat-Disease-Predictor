@@ -1,18 +1,17 @@
 import ollama
 
+import ollama
+
 def generate_explanation(bpm, condition):
-
+    
     prompt = f"""
-    A user has a heart rate of {bpm} BPM.
-
-    Predicted condition: {condition}
-
-    Explain what this means for the person's health in simple terms
-    and suggest basic precautions.
+    A patient has a heart rate of {bpm} BPM.
+    The predicted condition is {condition}.
+    Explain the possible health risk in 2 simple sentences.
     """
 
     response = ollama.chat(
-        model='llama3',
+        model='phi3',
         messages=[
             {"role": "user", "content": prompt}
         ]
