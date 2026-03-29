@@ -4,6 +4,7 @@
 <head>
     <title>AI Heartbeat Monitor</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -12,19 +13,26 @@
 
 <h1>AI Heartbeat Disease Predictor</h1>
 
-<p>Enter your heart rate (BPM)</p>
+<p>Enter your heart rate (BPM) for instant analysis</p>
 
-<input type="number" id="bpm" placeholder="Enter BPM">
+<div class="input-group">
+    <input type="number" id="bpm" placeholder="Enter BPM" min="40" max="200">
+    <button onclick="analyzeHeartbeat()">Analyze Heartbeat</button>
+</div>
 
-<button onclick="analyzeHeartbeat()">Analyze</button>
+<div class="result" id="result-section" style="display: none;">
 
-<div class="result">
+<h2>Analysis Result</h2>
 
-<h2>Result</h2>
-
-<p id="condition"></p>
-<p id="severity"></p>
-<p id="explanation"></p>
+<div class="result-item">
+    <strong>Condition:</strong> <span id="condition"></span>
+</div>
+<div class="result-item">
+    <strong>Severity:</strong> <span id="severity"></span>
+</div>
+<div class="result-item">
+    <strong>AI Explanation:</strong> <span id="explanation"></span>
+</div>
 
 </div>
 
