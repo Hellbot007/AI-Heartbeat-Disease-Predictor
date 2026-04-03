@@ -1,36 +1,64 @@
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
 from flask import Flask, request, jsonify
-from predictor import predict_disease
-from ollama_ai import generate_explanation
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+from backend.predictor import predict
+from rag.rag_engine import RAGEngine
+from backend.gemini_ai import ask_gemini
+
 app = Flask(__name__)
-CORS(app)
 
+rag = RAGEngine()
 
-@app.route("/")
-def home():
-    return "Heartbeat AI Backend Running"
+# -----------------------
+# Prediction API
+# -----------------------
+@app.route("/predict", methods=["POST"])
+def predict_route():
 
-
-@app.route("/analyze", methods=["POST"])
-def analyze():
-    print("Request received")
     data = request.json
-    bpm = data["bpm"]
+    features = data["features"]
 
-    prediction = predict_disease(bpm)
+    prediction = predict(features)
 
-    try:
-        explanation = generate_explanation(bpm, prediction["condition"])
-    except Exception as e:
-        print("AI error:", e)
-        explanation = "AI explanation unavailable"
+    explanation = rag.generate_explanation(prediction)
 
     return jsonify({
-        "bpm": bpm,
-        "condition": prediction["condition"],
-        "severity": prediction["severity"],
-        "ai_explanation": explanation
+        "prediction": prediction,
+        "explanation": explanation
+    })
+
+
+# -----------------------
+# Chat API
+# -----------------------
+@app.route("/chat", methods=["POST"])
+def chat():
+
+    data = request.json
+    message = data["message"]
+
+    context = rag.get_context(message)
+
+    prompt = f"""
+You are an AI cardiology assistant.
+
+User question:
+{message}
+
+Medical context:
+{context}
+
+Provide a helpful answer.
+"""
+
+    response = ask_gemini(prompt)
+
+    return jsonify({
+        "response": response
     })
 
 

@@ -1,5 +1,6 @@
 flask
-ollama
+google-generativeai
+python-dotenv
 numpy
 pandas
 scikit-learn

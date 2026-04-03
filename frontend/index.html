@@ -1,45 +1,100 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <title>AI Heartbeat Monitor</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Heart Disease Predictor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
-
 <body>
+    <div class="background-mesh"></div>
+    <div class="container">
+        <h1>AI Heart <span class="highlight">Predictor</span></h1>
+        <p class="subtitle">Enter your health data for an instant AI assessment.</p>
+        
+        <div class="form-grid">
+            <div class="input-group">
+                <label for="age">Age</label>
+                <input type="number" id="age" placeholder="e.g. 45">
+            </div>
+            <div class="input-group">
+                <label for="sex">Sex (1=M, 0=F)</label>
+                <input type="number" id="sex" placeholder="1 or 0">
+            </div>
+            <div class="input-group">
+                <label for="cp">Chest Pain (0-3)</label>
+                <input type="number" id="cp" placeholder="0-3">
+            </div>
+            <div class="input-group">
+                <label for="trestbps">Blood Pressure</label>
+                <input type="number" id="trestbps" placeholder="120">
+            </div>
+            <div class="input-group">
+                <label for="chol">Cholesterol</label>
+                <input type="number" id="chol" placeholder="200">
+            </div>
+            <div class="input-group">
+                <label for="fbs">Fasting Blood Sugar > 120</label>
+                <input type="number" id="fbs" placeholder="1 or 0">
+            </div>
+            <div class="input-group">
+                <label for="restecg">Resting ECG (0-2)</label>
+                <input type="number" id="restecg" placeholder="0-2">
+            </div>
+            <div class="input-group">
+                <label for="thalach">Max Heart Rate</label>
+                <input type="number" id="thalach" placeholder="150">
+            </div>
+            <div class="input-group">
+                <label for="exang">Exercise Angina (1/0)</label>
+                <input type="number" id="exang" placeholder="1 or 0">
+            </div>
+            <div class="input-group">
+                <label for="oldpeak">ST Depression</label>
+                <input type="number" step="0.1" id="oldpeak" placeholder="1.0">
+            </div>
+            <div class="input-group">
+                <label for="slope">Slope (0-2)</label>
+                <input type="number" id="slope" placeholder="0-2">
+            </div>
+            <div class="input-group">
+                <label for="ca">Major Vessels (0-3)</label>
+                <input type="number" id="ca" placeholder="0-3">
+            </div>
+            <div class="input-group" style="grid-column: span 2;">
+                <label for="thal">Thalassemia (1-3)</label>
+                <input type="number" id="thal" placeholder="1-3">
+            </div>
+        </div>
 
-<div class="container">
+        <button onclick="predict()" class="primary-btn">Analyze Risk</button>
 
-<h1>AI Heartbeat Disease Predictor</h1>
+        <div id="result-container" style="display: none;" class="result">
+            <h2 id="result"></h2>
+            <p id="explanation"></p>
+        </div>
 
-<p>Enter your heart rate (BPM) for instant analysis</p>
+        <button id="chatBtn" onclick="showChat()" style="display:none" class="secondary-btn">
+            Chat with AI Doctor
+        </button>
+    </div>
 
-<div class="input-group">
-    <input type="number" id="bpm" placeholder="Enter BPM" min="40" max="200">
-    <button onclick="analyzeHeartbeat()">Analyze Heartbeat</button>
-</div>
+    <!-- Chat Modal or Overlay -->
+    <div id="chatSection" class="chat-modal" style="display:none">
+        <div class="chat-header">
+            <h2>AI Doctor</h2>
+            <button onclick="document.getElementById('chatSection').style.display='none'" class="close-btn">&times;</button>
+        </div>
+        <div id="chatbox" class="chatbox"></div>
+        <div class="chat-input-area">
+            <input type="text" id="userInput" placeholder="Ask about your results...">
+            <button onclick="sendMessage()" class="send-btn">Send</button>
+        </div>
+    </div>
 
-<div class="result" id="result-section" style="display: none;">
-
-<h2>Analysis Result</h2>
-
-<div class="result-item">
-    <strong>Condition:</strong> <span id="condition"></span>
-</div>
-<div class="result-item">
-    <strong>Severity:</strong> <span id="severity"></span>
-</div>
-<div class="result-item">
-    <strong>AI Explanation:</strong> <span id="explanation"></span>
-</div>
-
-</div>
-
-</div>
-
-<script src="script.js"></script>
-
+    <script src="script.js"></script>
 </body>
-
 </html>
