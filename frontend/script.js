@@ -4,20 +4,25 @@
 
 async function predict() {
 
+    const getVal = (id) => {
+        let val = document.getElementById(id).value.trim();
+        return val === "" ? null : parseFloat(val);
+    };
+
     const features = [
-        parseFloat(document.getElementById("age").value),
-        parseFloat(document.getElementById("sex").value),
-        parseFloat(document.getElementById("cp").value),
-        parseFloat(document.getElementById("trestbps").value),
-        parseFloat(document.getElementById("chol").value),
-        parseFloat(document.getElementById("fbs").value),
-        parseFloat(document.getElementById("restecg").value),
-        parseFloat(document.getElementById("thalach").value),
-        parseFloat(document.getElementById("exang").value),
-        parseFloat(document.getElementById("oldpeak").value),
-        parseFloat(document.getElementById("slope").value),
-        parseFloat(document.getElementById("ca").value),
-        parseFloat(document.getElementById("thal").value)
+        getVal("age"),
+        getVal("sex"),
+        getVal("cp"),
+        getVal("trestbps"),
+        getVal("chol"),
+        getVal("fbs"),
+        getVal("restecg"),
+        getVal("thalach"),
+        getVal("exang"),
+        getVal("oldpeak"),
+        getVal("slope"),
+        getVal("ca"),
+        getVal("thal")
     ];
 
     try {
@@ -42,6 +47,11 @@ async function predict() {
 
         document.getElementById("explanation").innerText =
             data.explanation;
+
+        if (data.top_diseases) {
+            let formattedDiseases = data.top_diseases.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+            document.getElementById("top-diseases").innerHTML = "<h3>Top 3 Disease Risks:</h3>" + formattedDiseases;
+        }
 
         // Show chat button after prediction
         document.getElementById("chatBtn").style.display = "block";
@@ -105,9 +115,10 @@ async function sendMessage() {
 
         const data = await response.json();
 
+        let formattedResponse = data.response.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
         // Show AI response
         chatbox.innerHTML +=
-            "<p class='msg-ai'><b>AI Doctor:</b> " + data.response + "</p>";
+            "<p class='msg-ai'><b>AI Doctor:</b><br>" + formattedResponse + "</p>";
 
         // Auto scroll
         chatbox.scrollTop = chatbox.scrollHeight;

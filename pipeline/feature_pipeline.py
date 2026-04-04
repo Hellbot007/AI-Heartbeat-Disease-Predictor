@@ -19,8 +19,14 @@ def prepare_features(df):
     if target not in df.columns:
         raise Exception("Target column 'num' not found")
 
-    # Keep numeric columns only
-    df = df.select_dtypes(include=["int64", "float64"])
+    features_list = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalch', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
+
+    # Make sure we only use the numeric columns that correspond to the frontend
+    df = df[features_list + [target]].copy()
+    
+    # Convert all columns to numeric, coercing errors to NaN
+    for col in df.columns:
+        df[col] = pd.to_numeric(df[col], errors='coerce')
 
     # Fill missing values
     df = df.fillna(df.mean())

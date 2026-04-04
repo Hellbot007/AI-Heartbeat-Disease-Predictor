@@ -1,15 +1,26 @@
 import os
+import sys
+
+# Add the project root directory to sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
 
 from flask import Flask, request, jsonify
-from backend.predictor import predict
+from flask_cors import CORS
+from models.predict_model import predict_heart_risk as predict
 from rag.rag_engine import RAGEngine
 from backend.gemini_ai import ask_gemini
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='../frontend', static_url_path='/')
+CORS(app)
+
+@app.route("/")
+def index():
+    return app.send_static_file("index.html")
 
 rag = RAGEngine()
 
@@ -26,9 +37,32 @@ def predict_route():
 
     explanation = rag.generate_explanation(prediction)
 
+    feature_names = [
+        "Age", "Sex (1=M, 0=F)", "Chest Pain (0-3)", "Resting Blood Pressure", 
+        "Cholesterol", "Fasting Blood Sugar > 120", "Resting ECG (0-2)", 
+        "Max Heart Rate", "Exercise Angina (1/0)", "ST Depression", 
+        "Slope (0-2)", "Major Vessels (0-3)", "Thalassemia (1-3)"
+    ]
+    try:
+        patient_info_lines = []
+        for name, val in zip(feature_names, features):
+            display_val = val if val is not None else "Not Provided (Estimated by AI)"
+            patient_info_lines.append(f"{name}: {display_val}")
+        patient_info = "\n".join(patient_info_lines)
+        prompt = f"""
+Based on the following patient health features:
+{patient_info}
+
+What are the top 3 heart-related diseases or conditions this patient might be at risk for? Include an estimated probability percentage for each. Keep the response brief and formatted as bullet points.
+"""
+        top_diseases = ask_gemini(prompt)
+    except Exception as e:
+        top_diseases = "Could not fetch top 3 diseases."
+
     return jsonify({
         "prediction": prediction,
-        "explanation": explanation
+        "explanation": explanation,
+        "top_diseases": top_diseases
     })
 
 
@@ -52,7 +86,7 @@ User question:
 Medical context:
 {context}
 
-Provide a helpful answer.
+Provide a helpful answer. Always format your answer using bullet points for clarity.
 """
 
     response = ask_gemini(prompt)

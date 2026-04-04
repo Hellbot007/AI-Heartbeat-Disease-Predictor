@@ -19,3 +19,7 @@ class RAGEngine:
         explanation = " ".join(docs)
 
         return explanation
+
+    def get_context(self, message):
+        docs = self.vector_store.search(message)
+        return " ".join(docs)

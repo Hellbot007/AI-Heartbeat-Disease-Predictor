@@ -1,18 +1,18 @@
 import os
-import google.generativeai as genai
+from google import genai
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# Configure the API key
-genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
-
-# Create the model instance using the standard robust and fast model
-model = genai.GenerativeModel('gemini-1.5-flash')
+# Create the client
+client = genai.Client(api_key=os.environ.get("GOOGLE_API_KEY"))
 
 def ask_gemini(prompt: str) -> str:
     """Send a prompt to Gemini and return the text response."""
-    response = model.generate_content(prompt)
+    response = client.models.generate_content(
+        model='gemini-2.5-flash',
+        contents=prompt
+    )
     return response.text
 
 def generate_explanation(bpm: int, condition: str) -> str:
@@ -22,5 +22,8 @@ def generate_explanation(bpm: int, condition: str) -> str:
     The predicted condition is {condition}.
     Explain the possible health risk in 2 simple sentences.
     """
-    response = model.generate_content(prompt)
+    response = client.models.generate_content(
+        model='gemini-2.5-flash',
+        contents=prompt
+    )
     return response.text
