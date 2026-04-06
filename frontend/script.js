@@ -53,9 +53,6 @@ async function predict() {
             document.getElementById("top-diseases").innerHTML = "<h3>Top 3 Disease Risks:</h3>" + formattedDiseases;
         }
 
-        // Show chat button after prediction
-        document.getElementById("chatBtn").style.display = "block";
-
     } catch (error) {
 
         console.error("Prediction error:", error);
@@ -66,16 +63,60 @@ async function predict() {
 
 
 // ==============================
-// Chat Toggle
+// Document Upload
 // ==============================
 
-function showChat() {
+async function uploadDocument() {
+    const fileInput = document.getElementById('medicalDoc');
+    const statusMsg = document.getElementById('uploadStatus');
 
-    document.getElementById("chatSection").style.display = "block";
+    if (!fileInput.files.length) {
+        statusMsg.innerText = "Please select a file first.";
+        statusMsg.style.color = "#ff4444";
+        return;
+    }
 
+    const file = fileInput.files[0];
+    const formData = new FormData();
+    formData.append("document", file);
+
+    statusMsg.innerText = "Extracting data with AI... please wait.";
+    statusMsg.style.color = "var(--primary)";
+
+    try {
+        const response = await fetch("http://127.0.0.1:5000/upload-document", {
+            method: "POST",
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            statusMsg.innerText = "Data extracted successfully! Running prediction...";
+            statusMsg.style.color = "#00e676";
+            
+            // Auto fill
+            if(data.extracted_data) {
+                const keys = ["age", "sex", "cp", "trestbps", "chol", "fbs", "restecg", "thalach", "exang", "oldpeak", "slope", "ca", "thal"];
+                keys.forEach(key => {
+                    if(data.extracted_data[key] !== null && data.extracted_data[key] !== undefined) {
+                        document.getElementById(key).value = data.extracted_data[key];
+                    }
+                });
+            }
+            
+            // Auto Predict!
+            predict();
+        } else {
+            statusMsg.innerText = "Failed to extract data: " + (data.error || "Unknown error");
+            statusMsg.style.color = "#ff4444";
+        }
+    } catch (error) {
+        statusMsg.innerText = "Error connecting to backend.";
+        statusMsg.style.color = "#ff4444";
+        console.error(error);
+    }
 }
-
-
 
 // ==============================
 // Send Chat Message

@@ -11,116 +11,129 @@
 </head>
 <body>
     <div class="background-mesh"></div>
-    <div class="container">
-        <h1>AI Heart <span class="highlight">Predictor</span></h1>
-        <p class="subtitle">Enter your health data for an instant AI assessment.</p>
-        <div class="info-banner" style="background: rgba(0,229,255,0.1); border-left: 3px solid #00e5ff; padding: 12px; margin-bottom: 20px; text-align: left; border-radius: 4px;">
-            <p style="font-size: 0.85rem; color: #cbd5e1; margin: 0;"><b>Note:</b> You can skip variables you don't confidently know. The AI will intelligently auto-fill missing values utilizing standard medical population averages!</p>
-        </div>
-        
-        <div class="form-grid">
-            <div class="input-group">
-                <label for="age">Age</label>
-                <p class="field-desc">Your age in years.</p>
-                <input type="number" id="age" placeholder="e.g. 45">
+    
+    <div class="dashboard-wrapper">
+        <!-- Left Panel: Upload & Form -->
+        <div class="panel left-panel">
+            <h1>AI Heart <span class="highlight">Predictor</span></h1>
+            <p class="subtitle">Enter health data or upload a medical document.</p>
+            
+            <div class="upload-area">
+                <h3>Auto-Fill with AI</h3>
+                <p>Upload a health report (PDF/Image) to automatically detect your values.</p>
+                <input type="file" id="medicalDoc" accept=".pdf, image/*">
+                <button onclick="uploadDocument()" id="uploadBtn" class="secondary-btn">Upload & Auto-Fill</button>
+                <div id="uploadStatus" style="margin-top: 10px; font-size: 0.9rem; color: var(--text-muted);"></div>
             </div>
 
-            <div class="input-group">
-                <label for="sex">Biological Sex</label>
-                <p class="field-desc">Enter 1 for Male, 0 for Female.</p>
-                <input type="number" id="sex" placeholder="1 or 0">
-            </div>
-
-            <div class="input-group">
-                <label for="cp">Chest Pain Type</label>
-                <p class="field-desc">0: Typical angina, 1: Atypical angina, 2: Non-anginal pain, 3: Asymptomatic.</p>
-                <input type="number" id="cp" placeholder="0 to 3">
-            </div>
-
-            <div class="input-group">
-                <label for="trestbps">Resting Blood Pressure</label>
-                <p class="field-desc">Your blood pressure reading (systolic) when you are completely at rest (in mm Hg).</p>
-                <input type="number" id="trestbps" placeholder="e.g. 120">
+            <div class="info-banner" style="background: rgba(0,229,255,0.1); border-left: 3px solid #00e5ff; padding: 12px; margin-bottom: 20px; text-align: left; border-radius: 4px;">
+                <p style="font-size: 0.85rem; color: #cbd5e1; margin: 0;"><b>Note:</b> You can skip variables you don't confidently know. The AI will intelligently auto-fill missing values utilizing standard medical population averages!</p>
             </div>
             
-            <div class="input-group">
-                <label for="chol">Serum Cholesterol</label>
-                <p class="field-desc">The amount of cholesterol in your blood (in mg/dl). Higher levels can increase heart risk.</p>
-                <input type="number" id="chol" placeholder="e.g. 200">
+            <div class="form-grid">
+                <div class="input-group">
+                    <label for="age">Age</label>
+                    <p class="field-desc">Your age in years.</p>
+                    <input type="number" id="age" placeholder="e.g. 45">
+                </div>
+
+                <div class="input-group">
+                    <label for="sex">Biological Sex</label>
+                    <p class="field-desc">Enter 1 for Male, 0 for Female.</p>
+                    <input type="number" id="sex" placeholder="1 or 0">
+                </div>
+
+                <div class="input-group">
+                    <label for="cp">Chest Pain Type</label>
+                    <p class="field-desc">0: Typical angina, 1: Atypical angina, 2: Non-anginal pain, 3: Asymptomatic.</p>
+                    <input type="number" id="cp" placeholder="0 to 3">
+                </div>
+
+                <div class="input-group">
+                    <label for="trestbps">Resting Blood Pressure</label>
+                    <p class="field-desc">Systolic at rest (in mm Hg).</p>
+                    <input type="number" id="trestbps" placeholder="e.g. 120">
+                </div>
+                
+                <div class="input-group">
+                    <label for="chol">Serum Cholesterol</label>
+                    <p class="field-desc">Amount in blood (in mg/dl).</p>
+                    <input type="number" id="chol" placeholder="e.g. 200">
+                </div>
+
+                <div class="input-group">
+                    <label for="fbs">Fasting Blood Sugar</label>
+                    <p class="field-desc">Is > 120 mg/dl? 1=True, 0=False.</p>
+                    <input type="number" id="fbs" placeholder="1 or 0">
+                </div>
+
+                <div class="input-group">
+                    <label for="restecg">Resting ECG Results</label>
+                    <p class="field-desc">0: Normal, 1: ST-T Wave, 2: LVH.</p>
+                    <input type="number" id="restecg" placeholder="0 to 2">
+                </div>
+                
+                <div class="input-group">
+                    <label for="thalach">Max Heart Rate</label>
+                    <p class="field-desc">Highest BPM during exertion.</p>
+                    <input type="number" id="thalach" placeholder="e.g. 150">
+                </div>
+
+                <div class="input-group">
+                    <label for="exang">Exercise Angina</label>
+                    <p class="field-desc">Chest pain induced by exercise? 1=Yes, 0=No.</p>
+                    <input type="number" id="exang" placeholder="1 = Yes, 0 = No">
+                </div>
+
+                <div class="input-group">
+                    <label for="oldpeak">ST Depression (Oldpeak)</label>
+                    <p class="field-desc">ECG abnormality post-exercise.</p>
+                    <input type="number" step="0.1" id="oldpeak" placeholder="e.g. 1.0">
+                </div>
+
+                <div class="input-group">
+                    <label for="slope">Peak Exercise ST Segment</label>
+                    <p class="field-desc">0: Upsloping, 1: Flat, 2: Downsloping.</p>
+                    <input type="number" id="slope" placeholder="0 to 2">
+                </div>
+
+                <div class="input-group">
+                    <label for="ca">Major Vessels</label>
+                    <p class="field-desc">Number of vessels (0-3).</p>
+                    <input type="number" id="ca" placeholder="0 to 3">
+                </div>
+
+                <div class="input-group" style="grid-column: span 2;">
+                    <label for="thal">Thalassemia</label>
+                    <p class="field-desc">Blood disorder: 1: Normal, 2: Fixed defect, 3: Reversable defect.</p>
+                    <input type="number" id="thal" placeholder="1 to 3">
+                </div>
             </div>
 
-            <div class="input-group">
-                <label for="fbs">Fasting Blood Sugar</label>
-                <p class="field-desc">Is fasting blood sugar &gt; 120 mg/dl? Enter 1 if True, 0 if False.</p>
-                <input type="number" id="fbs" placeholder="1 or 0">
-            </div>
+            <button onclick="predict()" class="primary-btn">Analyze Risk</button>
 
-            <div class="input-group">
-                <label for="restecg">Resting ECG Results</label>
-                <p class="field-desc">0: Normal, 1: ST-T Wave abnormality, 2: Left ventricular hypertrophy.</p>
-                <input type="number" id="restecg" placeholder="0 to 2">
+        </div>
+
+        <!-- Right Panel: Results & Chat -->
+        <div class="panel right-panel">
+            <div id="result-container" class="result" style="display: none;">
+                <h2 id="result"></h2>
+                <p id="explanation"></p>
+                <div id="top-diseases" class="top-diseases" style="margin-top: 15px;"></div>
             </div>
             
-            <div class="input-group">
-                <label for="thalach">Max Heart Rate</label>
-                <p class="field-desc">The highest number of beats per minute your heart can reach during exertion.</p>
-                <input type="number" id="thalach" placeholder="e.g. 150">
+            <div id="chatSection" class="chat-container">
+                <div class="chat-header">
+                    <h2>🩺 AI Doctor</h2>
+                </div>
+                <div id="chatbox" class="chatbox">
+                    <p class="msg-ai"><b>AI Doctor:</b><br>Hello! Run an analysis to begin, or ask me any cardiology-related questions.</p>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="userInput" placeholder="Ask about your results...">
+                    <button onclick="sendMessage()" class="send-btn">Send</button>
+                </div>
             </div>
-
-            <div class="input-group">
-                <label for="exang">Exercise Angina</label>
-                <p class="field-desc">Do you have chest pain that is induced by exercising? Enter 1 if Yes, 0 if No.</p>
-                <input type="number" id="exang" placeholder="1 = Yes, 0 = No">
-            </div>
-
-            <div class="input-group">
-                <label for="oldpeak">ST Depression (Oldpeak)</label>
-                <p class="field-desc">A measure of abnormality in an electrocardiogram (ECG) after exercise relative to rest.</p>
-                <input type="number" step="0.1" id="oldpeak" placeholder="e.g. 1.0">
-            </div>
-
-            <div class="input-group">
-                <label for="slope">Peak Exercise ST Segment</label>
-                <p class="field-desc">The slope of the ST segment. 0: Upsloping, 1: Flat, 2: Downsloping.</p>
-                <input type="number" id="slope" placeholder="0 to 2">
-            </div>
-
-            <div class="input-group">
-                <label for="ca">Major Vessels</label>
-                <p class="field-desc">Number of major blood vessels (0-3) identified and colored by fluoroscopy.</p>
-                <input type="number" id="ca" placeholder="0 to 3">
-            </div>
-
-            <div class="input-group" style="grid-column: span 2;">
-                <label for="thal">Thalassemia</label>
-                <p class="field-desc">A blood disorder type. 1: Normal, 2: Fixed defect, 3: Reversable defect.</p>
-                <input type="number" id="thal" placeholder="1 to 3">
-            </div>
-        </div>
-
-        <button onclick="predict()" class="primary-btn">Analyze Risk</button>
-
-        <div id="result-container" style="display: none;" class="result">
-            <h2 id="result"></h2>
-            <p id="explanation"></p>
-            <div id="top-diseases" class="top-diseases" style="margin-top: 15px;"></div>
-        </div>
-
-        <button id="chatBtn" onclick="showChat()" style="display:none" class="secondary-btn">
-            Chat with AI Doctor
-        </button>
-    </div>
-
-    <!-- Chat Modal or Overlay -->
-    <div id="chatSection" class="chat-modal" style="display:none">
-        <div class="chat-header">
-            <h2>AI Doctor</h2>
-            <button onclick="document.getElementById('chatSection').style.display='none'" class="close-btn">&times;</button>
-        </div>
-        <div id="chatbox" class="chatbox"></div>
-        <div class="chat-input-area">
-            <input type="text" id="userInput" placeholder="Ask about your results...">
-            <button onclick="sendMessage()" class="send-btn">Send</button>
         </div>
     </div>
 
