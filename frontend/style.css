@@ -238,6 +238,15 @@ button {
     line-height: 1.6;
 }
 
+.disclaimer {
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    font-size: 0.8rem;
+    font-style: italic;
+    color: #94a3b8 !important;
+}
+
 /* Chat UI in Right Panel */
 .chat-container {
     background: rgba(0, 0, 0, 0.2);

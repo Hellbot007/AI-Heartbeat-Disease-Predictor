@@ -57,3 +57,7 @@ for n in range(12, 1, -1):
     clf.fit(X_train_sub_scaled, y_train)
     score = clf.score(X_test_sub_scaled, y_test)
     print(f"Top {n} features accuracy: {score:.4f} (Features: {', '.join(top_n_features)})")
+
+print("\n" + "-" * 50)
+print("NOTE: This system is intended for decision support and not as a replacement for professional medical diagnosis.")
+print("-" * 50)
