@@ -13,7 +13,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from models.predict_model import predict_heart_risk as predict
 from rag.rag_engine import RAGEngine
-from backend.gemini_ai import ask_gemini, extract_medical_data_from_document
+from backend.gemini_ai import ask_gemini
 
 app = Flask(__name__, static_folder='../frontend', static_url_path='/')
 CORS(app)
@@ -96,36 +96,6 @@ Provide a helpful answer. Always format your answer using bullet points for clar
     })
 
 
-# -----------------------
-# Document Upload API
-# -----------------------
-@app.route("/upload-document", methods=["POST"])
-def upload_document():
-    if 'document' not in request.files:
-        return jsonify({"error": "No document provided"}), 400
-        
-    file = request.files['document']
-    
-    if file.filename == '':
-        return jsonify({"error": "No document selected"}), 400
-        
-    try:
-        file_bytes = file.read()
-        mime_type = file.mimetype
-        
-        # Default to pdf or image types
-        if mime_type not in ["application/pdf", "image/jpeg", "image/png", "image/webp", "image/jpg"]:
-            mime_type = "application/pdf" # fallback
-            
-        extracted_data = extract_medical_data_from_document(file_bytes, mime_type)
-        
-        return jsonify({
-            "message": "Extracted successfully",
-            "extracted_data": extracted_data
-        })
-    except Exception as e:
-        print(f"Error processing file: {e}")
-        return jsonify({"error": "Failed to process document"}), 500
 
 
 if __name__ == "__main__":
