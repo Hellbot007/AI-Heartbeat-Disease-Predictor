@@ -53,7 +53,7 @@ def predict_route():
 Based on the following patient health features:
 {patient_info}
 
-What are the top 3 heart-related diseases or conditions this patient might be at risk for? Include an estimated probability percentage for each. Keep the response brief and formatted as bullet points.
+What are the top 3 heart-related diseases or conditions this patient might be at risk for? Include an estimated probability percentage for each. Keep the response brief and formatted as a numbered list (1., 2., 3.). Please add a blank line between each item for better readability.
 """
         top_diseases = ask_gemini(prompt)
     except Exception as e:
@@ -86,7 +86,7 @@ User question:
 Medical context:
 {context}
 
-Provide a helpful answer. Always format your answer using bullet points for clarity.
+Provide a helpful answer. Always format your answer using a numbered list (1., 2., 3.) for clarity. Please add a blank line between each item.
 """
 
     response = ask_gemini(prompt)
