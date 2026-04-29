@@ -1,0 +1,234 @@
+--- PARAGRAPHS ---
+[0]: Project Report
+[2]: AI Systems Lab (20IC305P)
+
+[3]: 23BIT165
+[4]: Hozefa Ilyas Travadi
+[5]: Project Report
+[6]: AI HEARTBEAT DISEASE PREDICTOR
+[7]: An Integrated ML + AI Heart Disease Risk Prediction System
+[8]: 1. Aim
+[9]: To study, design, and develop a full-stack, AI-powered heart disease risk prediction system that analyses patient physiological features and accurately classifies the likelihood of cardiovascular disease. The system integrates classical Machine Learning models — Random Forest, Gradient Boosting, K-Nearest Neighbors, and Logistic Regression — trained on a combined dataset of over 70,000 patient records and evaluated for accuracy and F1-score. An AI-driven chatbot powered by Google Gemini 2.5 Flash, combined with a Retrieval-Augmented Generation (RAG) engine and a document-parsing module, provides intelligent, grounded medical assistance beyond pure prediction.
+[10]: 2. Project Objectives
+[11]: To understand the clinical relevance and computational challenges of early heart disease detection using patient health metrics.
+[12]: To collect, merge, and pre-process four independent cardiovascular and health datasets (Cleveland Heart Disease, Heart Failure Clinical Records, Cardiovascular Disease Dataset, and Sleep Health Dataset) into a single unified training corpus.
+[13]: To implement data cleaning pipelines including type coercion, missing value imputation via mean-fill, and StandardScaler normalization.
+[14]: To train and compare four ML classification models — Random Forest (primary), Gradient Boosting, K-Nearest Neighbours, and Logistic Regression — on 13 key physiological features.
+[15]: To evaluate all models on a 20% held-out test set using Accuracy, F1-Score (Macro), and F1-Score (Weighted) as performance metrics.
+[16]: To integrate the Google Gemini 2.5 Flash API for generating the top 3 most likely heart-related disease diagnoses with estimated risk percentages, and for conversational medical Q&A.
+[17]: To implement a custom Retrieval-Augmented Generation (RAG) engine using TF-IDF vectorization and cosine similarity to ground AI responses in curated medical knowledge, reducing hallucination risk.
+[18]: To build a multimodal medical document analysis feature allowing users to upload PDFs or images of lab reports, from which relevant health values are automatically extracted and fed into the prediction engine.
+[19]: To design and deliver a premium, dynamic, landscape-oriented web UI using vanilla HTML, CSS, and JavaScript served via a Flask REST API backend.
+[20]: 3. Problems Solved and How the System Solves Them
+[21]: 3.1 Problem: Late Detection of Cardiovascular Risk
+[22]: Heart disease is the leading global cause of mortality. Most patients receive a diagnosis only after a major event like a heart attack, by which point preventive intervention is too late.
+[23]: How it is solved: The system provides an instant, data-driven risk assessment based on 13 routinely measurable physiological parameters (age, sex, chest pain type, blood pressure, cholesterol, etc.). Patients and clinicians can evaluate risk at any point without requiring specialist appointments, enabling timely intervention.
+[24]: 3.2 Problem: High Dimensionality and Feature Noise in Clinical Data
+[25]: Raw patient records contain dozens of measurements, many of which may be irrelevant, missing, or noisy. Feeding such data directly to a model without preprocessing leads to poor generalization.
+[26]: How it is solved: A dedicated feature pipeline (feature_pipeline.py) selects exactly 13 clinically validated features. Numeric conversion and mean-fill imputation handle missing values. StandardScaler normalization ensures all features contribute proportionally to the model's decision boundary, preventing high-magnitude features (e.g., cholesterol in mg/dL) from dominating low-magnitude ones (e.g., binary fasting blood sugar).
+[27]: 3.3 Problem: Single-Model Brittleness and Bias
+[28]: Any single ML algorithm carries its own biases and failure modes. A single model may overfit to training data or perform poorly on certain patient demographics.
+[29]: How it is solved: Four distinct ML algorithms (Random Forest, Gradient Boosting, KNN, Logistic Regression) are each independently trained and evaluated on the same 80/20 data split. Their comparative performance is analysed across Accuracy and F1-Score, allowing informed model selection. The primary production model (Random Forest) achieves 99.91% test accuracy.
+[30]: 3.4 Problem: Raw Text Queries Cannot Be Matched to Medical Knowledge
+[31]: An AI language model responding to cardiology questions from memory alone risks generating incorrect or hallucinated medical advice.
+[32]: How it is solved: A custom RAG engine (rag_engine.py) converts both user queries and pre-loaded medical knowledge base entries into TF-IDF vectors. Cosine similarity retrieves the top-k most relevant knowledge snippets, which are injected into the Gemini prompt as verified medical context. This ensures AI responses are grounded in factual, curated cardiology knowledge.
+[33]: 3.5 Problem: Patients Cannot Easily Translate Lab Reports into Predictions
+[34]: Medical lab reports contain structured data (cholesterol levels, ECG readings, blood pressure) buried inside scanned PDFs or image files, making manual extraction time-consuming and error-prone.
+[35]: How it is solved: The /upload-document API endpoint accepts PDF and image uploads and passes them to Google Gemini's multimodal vision capability, which extracts the relevant health values and automatically populates the prediction engine's feature inputs. This bridges the gap between raw medical documentation and the prediction interface.
+[36]: 3.6 Problem: Heavy LLM Compute Requirements on Local Hardware
+[37]: Running open-source LLMs locally (e.g., Ollama, LLaMA) demands high-end GPU infrastructure, making deployment impractical on standard servers or developer machines.
+[38]: How it is solved: The system offloads all generative AI tasks (disease estimation, chatbot, document analysis) to the Google Gemini API. The ML prediction engine (Random Forest) runs in milliseconds on CPU using scikit-learn, while Gemini handles the computationally intensive reasoning tasks remotely. This makes the application deployable on any standard machine with internet access.
+[39]: 4. System Overview
+[40]: The AI Heartbeat Disease Predictor is a full-stack, hybrid AI web application that integrates classical machine learning with large language model capabilities for comprehensive cardiovascular risk assessment. The system accepts 13 patient physiological inputs through a browser-based interface, routes them through a trained ML classifier, and generates both a binary risk prediction (disease / no disease) and a ranked list of the top 3 most likely cardiac conditions with probability estimates. A conversational AI chatbot powered by Google Gemini 2.5 Flash and a medical document upload feature further extend the application's clinical utility.
+[41]: 4.1 Architecture and Technology Stack
+[42]: The system is structured across four main layers: a Vanilla JavaScript / HTML / CSS frontend; a Python Flask REST API backend; a machine learning engine built on scikit-learn; and an AI reasoning layer powered by Google Gemini. The four key API endpoints are: /predict (ML-based risk classification + Gemini disease estimation), /chat (RAG-augmented conversational assistance), /upload-document (multimodal lab report parsing), and / (static frontend serving).
+[43]: Table 1.1 — Full System Architecture and Technology Stack
+[44]: 4.2 Dataset Overview
+[45]: The system is trained on a combined dataset (heart_combined_dataset.csv) of 70,753 patient records assembled from four independent public health datasets: the UCI Cleveland Heart Disease Dataset, the Heart Failure Clinical Records Dataset, the Kaggle Cardiovascular Disease Dataset, and the Sleep Health and Lifestyle Dataset. From these, 13 clinically validated physiological features are extracted as model inputs.
+[47]: Figure 1.1 — Dataset Class Distribution (70,753 Total Samples)
+[48]: 4.3 Input Features
+[49]: The 13 physiological features used for prediction are listed below. These features are universally available from standard clinical assessments and cardiac workups, making the system practical for real-world deployment.
+[50]: Table 1.2 — The 13 Physiological Input Features
+[51]: 4.4 System Data Flow
+[52]: The system follows a sequential processing pipeline: (1) User inputs 13 physiological values via the frontend interface. (2) Values are sent to the Flask /predict endpoint as a JSON array. (3) The feature pipeline applies numeric coercion, mean imputation, and StandardScaler normalization. (4) The trained Random Forest classifier outputs a binary prediction (0 = No Disease, 1 = Disease) and prediction confidence. (5) The RAG engine retrieves relevant medical context based on the prediction. (6) Google Gemini estimates the top 3 most likely cardiac conditions with probability percentages. (7) All results are returned to the frontend as a JSON response and rendered in the UI.
+[53]: 5. Mathematical Formulas Used
+[54]: 5.1 Feature Standardization — StandardScaler (Z-Score Normalization)
+[55]: Before training, all 13 input features are normalized using Z-score standardization. This ensures that features measured on different scales (e.g., cholesterol in hundreds vs. binary flags of 0/1) contribute equally to the model's learning process:
+[56]: z = (x - μ) / σ
+[57]: Where: x = original feature value,  μ = feature mean (computed on training set),  σ = feature standard deviation. Features with large raw values such as cholesterol (chol, ~200 mg/dL) would otherwise dominate distance-based algorithms like KNN without this normalization step.
+[58]: 5.2 Mean Imputation for Missing Values
+[59]: Several feature columns in the combined dataset contain missing values due to inconsistent recording across the source datasets. Missing values are filled using the column mean computed on the training data to preserve statistical properties:
+[60]: x_imputed = mean(x_observed)
+[61]: 5.3 Random Forest — Ensemble Decision (Majority Voting)
+[62]: The primary model (Random Forest) aggregates predictions from N individual decision trees. Each tree T_i independently predicts a class label, and the final class is determined by majority vote:
+[63]: ŷ = mode({ T₁(x), T₂(x), ..., T_N(x) })   N = 100 estimators
+[64]: Each tree is trained on a random bootstrap sample (bagging) and uses a random subset of features at each split node, reducing overfitting and variance compared to a single decision tree.
+[65]: 5.4 Gini Impurity — Decision Tree Node Splitting Criterion
+[66]: Within each decision tree, node splits are chosen to minimize Gini impurity — a measure of how often a randomly chosen element would be incorrectly classified:
+[67]: Gini(t) = 1 − Σ p(c|t)²   summed over all classes c at node t
+[68]: A Gini impurity of 0 indicates a perfectly pure node (all samples belong to the same class). Splits that maximize the reduction in Gini impurity (Information Gain) are selected at each tree node.
+[69]: 5.5 Gradient Boosting — Sequential Residual Fitting
+[70]: The Gradient Boosting model builds an additive ensemble where each new weak learner h_m(x) is fit to the negative gradient (residuals) of the current model's loss function:
+[71]: F_m(x) = F_{m-1}(x) + η · h_m(x)   η = learning rate (shrinkage)
+[72]: For binary classification, the log-loss (cross-entropy) function is minimized. Each iteration progressively corrects the errors of the previous model, making Gradient Boosting particularly powerful for complex non-linear decision boundaries.
+[73]: 5.6 K-Nearest Neighbors — Euclidean Distance
+[74]: KNN classifies each test sample by finding the k = 5 closest training samples in feature space using Euclidean distance and assigning the majority class among those neighbours:
+[75]: d(x, xᵢ) = √( Σⱼ (xⱼ − xᵢⱼ)² )   summed over all 13 features j
+[76]: ŷ = majority_class({ class(x₁), ..., class(xₖ) })   k = 5 nearest neighbors
+[77]: 5.7 Logistic Regression — Sigmoid Function
+[78]: Logistic Regression models the probability of heart disease as a sigmoid transformation of a linear combination of the 13 input features:
+[79]: P(y=1|x) = 1 / (1 + e^(−(w₀ + w₁x₁ + w₂x₂ + ... + w₁₃x₁₃)))
+[80]: If P(y=1|x) ≥ 0.5, the patient is classified as at risk of heart disease. Weights w_i are optimized using L-BFGS gradient descent over up to 1,000 iterations to minimize the binary cross-entropy loss.
+[81]: 5.8 Accuracy Score
+[82]: Used to rank and compare all four trained models on the held-out 20% test set:
+[83]: Accuracy = (True Positives + True Negatives) / Total Predictions × 100%
+[84]: 5.9 F1-Score (Macro and Weighted)
+[85]: F1-Score balances Precision and Recall, especially important for this dataset which exhibits significant class imbalance (70,593 disease samples vs. 160 healthy samples):
+[86]: Precision = TP / (TP + FP)
+[87]: Recall    = TP / (TP + FN)
+[88]: F1 = 2 × (Precision × Recall) / (Precision + Recall)
+[89]: Macro F1: unweighted mean across both classes — penalises poor performance on the minority class (healthy patients). Weighted F1: mean weighted by class support — reflects overall correctness dominated by the majority class.
+[90]: 5.10 TF-IDF Similarity (RAG Engine)
+[91]: The RAG engine converts both the user query and all medical knowledge entries into TF-IDF vectors, then ranks entries by cosine similarity to retrieve the most relevant medical context:
+[92]: TF(w, d) = count(w, d) / total_words(d)
+[93]: IDF(w) = log((N + 1) / (df(w) + 1)) + 1
+[94]: Cosine_Sim(q, d) = (q · d) / (||q|| × ||d||)
+[95]: The top-k knowledge entries with the highest cosine similarity to the query are appended to the Gemini prompt as trusted medical context, significantly reducing hallucination risk.
+[96]: 6. Algorithms and Models Used
+[97]: 6.1 Data Preprocessing Pipeline
+[98]: Before any model training, raw patient data flows through a four-stage preprocessing pipeline implemented across feature_pipeline.py, pipeline/scaler_pipeline.py, and the preprocessing/ module:
+[99]: Dataset merging: Four source CSVs (cardio_train.csv, heart_disease.csv, heart_failure.csv, sleep_health.csv) are cleaned individually (clean_cardio.py, clean_heart_disease.py, etc.) and merged into heart_combined_dataset.csv via merge_datasets.py.
+[100]: Feature selection: The 13 clinically validated features listed in Table 1.2 are extracted. The target column 'num' is binarized: 0 = No Disease, all other values = 1 (Disease).
+[101]: Numeric coercion: All feature columns are cast to numeric using pd.to_numeric(errors='coerce'), converting malformed string values to NaN.
+[102]: Missing value imputation: NaN values are filled using column means (SimpleImputer strategy='mean') computed only on the training subset to prevent data leakage.
+[103]: StandardScaler normalization: All features are zero-mean, unit-variance normalized. The fitted scaler is serialized to scaler.pkl for consistent inference at prediction time.
+[104]: 6.2 Primary Model — Random Forest Classifier
+[105]: The production model deployed in the application is a Random Forest Classifier configured with 100 estimators (decision trees), trained on an 80% split of 56,602 samples and evaluated on a 20% test set of 14,151 samples. The model achieves 99.91% test accuracy. It is serialized to models/saved_models/heart_model.pkl and loaded at runtime by models/predict_model.py for sub-millisecond inference during API calls.
+[106]: Table 1.3 — Random Forest Model Configuration and Performance
+[107]: 6.3 Comparative Model — Gradient Boosting Classifier
+[108]: The Gradient Boosting model uses scikit-learn's GradientBoostingClassifier with default hyperparameters (100 stages, learning rate 0.1, max depth 3). It builds trees sequentially, each correcting the residuals of the previous model. It achieves 99.89% test accuracy — marginally lower than Random Forest — with a training time of approximately 1.00 second.
+[109]: 6.4 Comparative Model — K-Nearest Neighbors
+[110]: The KNN classifier (KNeighborsClassifier, k=5) classifies each test sample based on the majority class among its 5 nearest neighbours in the 13-dimensional feature space, measured by Euclidean distance. It achieves 99.89% test accuracy with the fastest training time (~0.05 seconds) since KNN is a lazy learner storing the training set without building an explicit model.
+[111]: 6.5 Comparative Model — Logistic Regression
+[112]: Logistic Regression (LogisticRegression, max_iter=1000, solver='lbfgs') fits a linear decision boundary in 13-dimensional feature space using iterative gradient descent optimization. It achieves 99.86% test accuracy and provides the most interpretable model through its learned feature weights. It is the best choice when model explainability is a priority.
+[113]: 6.6 AI Engine — Google Gemini 2.5 Flash
+[114]: For tasks beyond binary classification, the system invokes Google Gemini 2.5 Flash via the google-genai library (gemini_ai.py). Gemini handles three distinct tasks: (1) Top 3 cardiac condition estimation with probability percentages based on patient features; (2) Conversational cardiology Q&A augmented by RAG context; (3) Multimodal document analysis — extracting health values from uploaded PDF or image lab reports.
+[115]: 6.7 RAG Engine — TF-IDF + Cosine Similarity
+[116]: The RAG engine (rag_engine.py + vector_store.py + knowledge_base.py) implements a lightweight retrieval system without requiring an external vector database. Medical knowledge entries are loaded and indexed into a TF-IDF matrix at startup. At query time, cosine similarity ranks entries and the top-k most relevant are injected into the Gemini prompt. This grounds AI responses in curated, reviewed medical facts.
+[117]: 7. Accuracy — Graph Comparison Between All ML Models
+[118]: All four ML models — Random Forest, Gradient Boosting, K-Nearest Neighbors, and Logistic Regression — were trained and evaluated on the same dataset split (80% training / 20% test, random_state=42 throughout). The charts below compare Training Accuracy, Test Accuracy, and F1-Scores across all models to reveal which generalizes best and where each algorithm's strengths lie.
+[120]: Figure 1.2 — Training vs Test Accuracy and F1-Score Comparison Across All Four ML Models
+[121]: 7.1 Interpretation
+[122]: All four models achieve exceptionally high accuracy (>99.86%) on the 14,151-sample test set. This is attributable to the strong class imbalance in the dataset: 99.77% of all records are positive for heart disease (Class 1), meaning any model that learns to predict the majority class correctly will naturally achieve very high accuracy on standard accuracy metrics.
+[123]: The Random Forest model achieves the highest test accuracy at 99.91% and the highest F1-Macro score at 0.9056, making it the best overall performer and the justified choice as the production model. Its ensemble nature — averaging 100 independent trees — provides robustness against overfitting and noisy features.
+[124]: Table 1.4 — Model Accuracy and F1-Score Comparison Across All Four ML Models
+[125]: The Logistic Regression model's lowest Macro F1 score (0.8211) reflects its difficulty in identifying the minority class (healthy patients, Class 0) — it correctly classifies only 51% of the 35 healthy test patients, demonstrating the challenge of linear decision boundaries on imbalanced data. KNN and Gradient Boosting perform comparably in between, with F1-Macro scores of 0.8916 and 0.8878 respectively.
+[129]: 8. Numerical Analysis
+[130]: 8.1 Dataset Composition
+[131]: Table 1.5 — Dataset Composition and Train/Test Split Parameters
+[132]: 8.2 Complete Numerical Results — All Four Models on Test Set
+[133]: Table 1.6 — Complete Numerical Results: All Four Models on 14,151 Test Samples (TP = True Positives for Disease class; FP = False Positives; FN = False Negatives)
+[134]: 8.3 Confusion Matrix Analysis — All Four Models
+[135]: The confusion matrices below reveal different error profiles across models. The test set contains 35 healthy (Class 0) patients and 14,116 heart disease (Class 1) patients:
+[136]: Table 1.7 — Confusion Matrix Values for All Four Models (35 Healthy / 14,116 Disease Test Samples)
+[137]: 8.4 Per-Class Precision and Recall Analysis
+[138]: The table below provides per-class precision, recall, and F1-scores for all four models. The minority class (No Heart Disease, Class 0) is the most clinically critical: a false negative (disease patient classified as healthy) has far greater consequences than a false positive.
+[139]: Table 1.8 — Per-Class Precision (P), Recall (R), and F1-Score for Classes 0 and 1 (C0 = No Heart Disease; C1 = Heart Disease)
+[140]: 8.5 Training Time Comparison
+[141]: Training time is measured from model instantiation to fit completion on the 56,602-sample training set. KNN is the fastest (0.05s) since it performs no actual training computation — it simply stores the training data. Random Forest (0.52s) and Logistic Regression (0.87s) require moderate training time, while Gradient Boosting is the slowest (1.00s) due to its sequential tree-building approach.
+[142]: Table 1.9 — Training Time Comparison Across All Four Models (56,602-sample training set)
+[143]: 8.6 Key Observations
+[144]: Random Forest is the clear winner: highest test accuracy (99.91%), highest Macro F1 (0.9056), and the best balance between precision and recall on the minority healthy class (P=0.82, R=0.80).
+[145]: The severe class imbalance (99.77% disease vs. 0.23% healthy) inflates all models' overall accuracy above 99.8%, making Macro F1 and per-class recall the more meaningful evaluation metrics.
+[146]: Logistic Regression, despite achieving the highest precision on the healthy class (0.86), has the worst recall (0.51) — it misses 17 of 35 healthy patients, which in a clinical setting could lead to missed opportunities for preventive care.
+[147]: KNN achieves the best recall on the healthy class (0.83 — correctly identifying 29 of 35 healthy patients) at the cost of the lowest precision (0.74). For healthcare applications, high recall on the healthy class is critical to avoid missed detections.
+[148]: The 70,753-sample combined dataset significantly outperforms single-source datasets available publicly (typically 300–1,000 samples), providing a far more robust statistical foundation for model training.
+[149]: 9. Conclusion
+[150]: This experiment successfully demonstrates the design and end-to-end implementation of an AI-powered heart disease risk prediction system that integrates classical machine learning with modern large language model capabilities. Four ML models — Random Forest, Gradient Boosting, K-Nearest Neighbors, and Logistic Regression — were trained on a combined 70,753-sample patient dataset covering 13 physiological features. Random Forest achieved the highest test accuracy of 99.91% and was selected as the production classifier, serialized for sub-millisecond inference within the Flask API.
+[151]: The hybrid AI architecture — combining the Random Forest engine with Google Gemini 2.5 Flash for disease estimation and conversational assistance, and a custom TF-IDF RAG engine for hallucination-resistant medical knowledge retrieval — demonstrates how classical and generative AI can be synergistically combined to deliver clinically useful tools. The multimodal document analysis feature further bridges the gap between raw lab reports and actionable risk assessments.
+[152]: Future improvements include addressing the class imbalance through SMOTE oversampling or cost-sensitive learning, retraining on a more balanced dataset to improve minority class recall, deploying the application to a cloud hosting service for real-world access, and extending the feature set to include dynamic health metrics such as ECG waveforms or imaging data.
+[154]: — End of Report —
+
+--- TABLES ---
+Table 0:
+Layer | Component | Technology | Role
+1 | Frontend | HTML5 / CSS3 / Vanilla JS | User interface, form input, result display
+2 | Backend API | Python Flask + Flask-CORS | REST API routing and coordination
+3 | ML Engine | scikit-learn, Pandas, NumPy | Binary heart disease prediction
+4 | AI Engine | Google Gemini 2.5 Flash API | Disease estimation, chatbot, doc parsing
+5 | RAG Layer | TF-IDF + Cosine Similarity | Grounded medical knowledge retrieval
+--------------------
+Table 1:
+# | Feature | Clinical Description | Range / Values
+1 | age | Patient age in years | 29 – 77
+2 | sex | Biological sex | 1 = Male, 0 = Female
+3 | cp | Chest pain type | 0–3 (0=Typical Angina, 3=Asymptomatic)
+4 | trestbps | Resting blood pressure (mm Hg) | 94 – 200
+5 | chol | Serum cholesterol (mg/dL) | 126 – 564
+6 | fbs | Fasting blood sugar > 120 mg/dL | 1 = True, 0 = False
+7 | restecg | Resting electrocardiographic results | 0–2
+8 | thalch | Maximum heart rate achieved (bpm) | 71 – 202
+9 | exang | Exercise-induced angina | 1 = Yes, 0 = No
+10 | oldpeak | ST depression induced by exercise | 0.0 – 6.2
+11 | slope | Slope of peak exercise ST segment | 0–2
+12 | ca | Number of major vessels (0–3) colored by fluoroscopy | 0 – 3
+13 | thal | Thalassemia | 1 = Normal, 2 = Fixed Defect, 3 = Reversible Defect
+--------------------
+Table 2:
+Parameter | Value
+Algorithm | RandomForestClassifier (scikit-learn)
+n_estimators | 100 decision trees
+random_state | 42 (reproducibility)
+Splitting criterion | Gini impurity
+Max features per split | sqrt(n_features) = sqrt(13) ≈ 3
+Bootstrap sampling | True (bagging)
+Training set size | 56,602 samples
+Test set size | 14,151 samples (80/20 split, random_state=42)
+Test Accuracy | 99.91%
+Training Time | ~0.52 seconds
+--------------------
+Table 3:
+Model | Train Acc. | Test Acc. | F1 Macro | F1 Weighted | Selected?
+Random Forest | 100.00% | 99.91% | 0.9056 | 0.9991 | ✓ YES (Best)
+Gradient Boosting | 99.92% | 99.89% | 0.8878 | 0.9989 | No
+K-Nearest Neighbors | 99.94% | 99.89% | 0.8916 | 0.9989 | No
+Logistic Regression | 99.88% | 99.86% | 0.8211 | 0.9984 | No
+--------------------
+Table 4:
+Category | Count | Percentage
+No Heart Disease (Class 0) | 160 | 0.23%
+Heart Disease (Class 1) | 70,593 | 99.77%
+Total Dataset Size | 70,753 | 100%
+Training Set (80%) | 56,602 samples | —
+Test Set (20%) | 14,151 samples | —
+Input Features | 13 physiological features | —
+Random Seed (Split) | 42 | —
+--------------------
+Table 5:
+Model | Train Acc | Test Acc | F1 Macro | F1 Wt. | TP | FP / FN | Time (s)
+Random Forest | 100.00% | 99.91% | 0.9056 | 0.9991 | 14,110 | 7 FP / 6 FN | 0.5153s
+Gradient Boosting | 99.92% | 99.89% | 0.8878 | 0.9989 | 14,110 | 9 FP / 6 FN | 1.0002s
+K-Nearest Neighbors | 99.94% | 99.89% | 0.8916 | 0.9989 | 14,106 | 6 FP / 10 FN | 0.0500s
+Logistic Regression | 99.88% | 99.86% | 0.8211 | 0.9984 | 14,113 | 17 FP / 3 FN | 0.8707s
+--------------------
+Table 6:
+Model | TN (Healthy→Healthy) | FP (Healthy→Disease) | FN (Disease→Healthy) | TP (Disease→Disease)
+Random Forest | 28 | 7 | 6 | 14,110
+Gradient Boosting | 26 | 9 | 6 | 14,110
+K-Nearest Neighbors | 29 | 6 | 10 | 14,106
+Logistic Regression | 18 | 17 | 3 | 14,113
+--------------------
+Table 7:
+Model | P (C0) | R (C0) | F1 (C0) | P (C1) | R (C1) | F1 (C1) | Macro F1 | Wt. F1
+Random Forest | 0.82 | 0.80 | 0.81 | 1.00 | 1.00 | 1.00 | 0.9056 | 0.9991
+Gradient Boosting | 0.81 | 0.74 | 0.78 | 1.00 | 1.00 | 1.00 | 0.8878 | 0.9989
+K-Nearest Neighbors | 0.74 | 0.83 | 0.78 | 1.00 | 1.00 | 1.00 | 0.8916 | 0.9989
+Logistic Regression | 0.86 | 0.51 | 0.64 | 1.00 | 1.00 | 1.00 | 0.8211 | 0.9984
+--------------------
+Table 8:
+Model | Training Time | Inference Speed
+Random Forest | 0.5153 seconds | < 5 ms (batch)
+Gradient Boosting | 1.0002 seconds | < 5 ms (batch)
+K-Nearest Neighbors | 0.0500 seconds | Moderate (distance calc)
+Logistic Regression | 0.8707 seconds | < 1 ms (linear)
+--------------------
